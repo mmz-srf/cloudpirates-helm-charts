@@ -48,9 +48,7 @@ spec:
               {{- if .Values.mariadb.enabled }}
               valueFrom:
                 secretKeyRef:
-                  #name: {{ include "wordpress.chart" . }}-mariadb
                   name: {{ .Release.Name | trunc 63 | trimSuffix "-" }}-mariadb
-                  #name: {{ include "wordpress.fullname" . }}-mariadb --- IGNORE ---
                   key: mariadb-password
               {{- else }}
               value: {{ include "wordpress.databasePassword" . | quote }}

@@ -138,7 +138,7 @@ mariadb:
 ## @section Probes Configuration
 livenessProbe:
   ## @param livenessProbe.enabled Enable livenessProbe
-  enabled: false
+  enabled: true
   ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
   initialDelaySeconds: 120
   ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
@@ -152,7 +152,7 @@ livenessProbe:
 
 readinessProbe:
   ## @param readinessProbe.enabled Enable readinessProbe
-  enabled: false
+  enabled: true
   ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   initialDelaySeconds: 30
   ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
