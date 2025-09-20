@@ -45,6 +45,7 @@ body:
         - universal
         - clusterpirate
         - common
+        - ghost
         - keycloak
         - mariadb
         - memcached

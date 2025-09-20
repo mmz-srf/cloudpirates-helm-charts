@@ -1,5 +1,5 @@
 # Changelog
 
-## 0.1.0 (2025-09-17)
+## 0.1.1 (2025-09-19)
 
-* [keycloak]: Keycloak implementation ([#102](https://github.com/CloudPirates-io/helm-charts/pull/102))
+* [keycloak] add readme documentation and values.schema.json ([#127](https://github.com/CloudPirates-io/helm-charts/pull/127))

@@ -188,6 +188,16 @@ sentinel:
       cpu: 25m
       memory: 64Mi
 
+## @param resources Resource limits and requests for Redis init container pod
+initContainer:
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 25m
+      memory: 64Mi
+
 ## @param extraObjects Array of extra objects to deploy with the release
 extraObjects: []
 # - apiVersion: v1

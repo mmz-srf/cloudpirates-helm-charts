@@ -100,6 +100,22 @@ config:
   ## @param config.existingConfigmap Name of existing ConfigMap with PostgreSQL configuration
   existingConfigmap: ""
 
+## @section customUser Optional user to be created at initialisation with a custom password and database
+customUser: {}
+  ## @param customUser.name Name of the custom user to be created
+  # name: ""
+  ## @param customUser.database Name of the database to be created
+  # database: ""
+  ## @param customUser.password Password to be used for the custom user
+  # password: ""
+  ## @param customUser.existingSecret Existing secret, in which username, password and database name are saved
+  # existingSecret: ""
+  ## @param customUser.secretKeys Name of keys in existing secret to use the custom user name, password and database
+  # secretKeys:
+  #   name: ""
+  #   password: ""
+  #   database: ""
+
 ## @section PostgreSQL Initdb configuration
 initdb:
   ## @param initdb.args Send arguments to postgres initdb. This is a space separated string of arguments

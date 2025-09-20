@@ -68,20 +68,40 @@ spec:
             - sh
             - -c
             - |
-              mkdir -p /var/lib/rabbitmq/plugins /opt/rabbitmq/plugins
+              mkdir -p /var/lib/rabbitmq/plugins
               {{- range .Values.installPlugins }}
               echo "Downloading plugin from {{ . }}"
               wget -O /var/lib/rabbitmq/plugins/$(basename {{ . }}) {{ . }}
               {{- end }}
-              echo "Copying plugins to RabbitMQ plugin directory"
-              cp /var/lib/rabbitmq/plugins/*.ez /opt/rabbitmq/plugins/
-              chown -R {{ .Values.securityContext.runAsUser | default 999 }}:{{ .Values.securityContext.runAsGroup | default 999 }} /var/lib/rabbitmq/plugins /opt/rabbitmq/plugins
-              chmod -R 755 /var/lib/rabbitmq/plugins /opt/rabbitmq/plugins
+              echo "Moving downloaded plugins to shared directory"
+              if ls /var/lib/rabbitmq/plugins/*.ez 1> /dev/null 2>&1; then
+                mv /var/lib/rabbitmq/plugins/*.ez /tmp/plugins/
+                echo "Successfully moved plugins"
+              else
+                echo "No plugins to move"
+              fi
           volumeMounts:
             - name: data
               mountPath: /var/lib/rabbitmq
             - name: plugins
-              mountPath: /opt/rabbitmq/plugins
+              mountPath: /tmp/plugins
+        - name: copy-plugins
+          image: {{ include "rabbitmq.image" . | quote }}
+          imagePullPolicy: {{ include "common.imagePullPolicy" (dict "image" .Values.image) }}
+          {{- if .Values.initContainer.securityContext }}
+          securityContext:
+            {{- toYaml .Values.initContainer.securityContext | nindent 12 }}
+          {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              echo "Copying built-in RabbitMQ plugins to shared directory"
+              cp -r /opt/rabbitmq/plugins/* /tmp/plugins/
+              echo "Built-in plugins copied successfully"
+          volumeMounts:
+            - name: plugins
+              mountPath: /tmp/plugins
         {{- end }}
         {{- if .Values.customScripts.initContainers }}
         {{- toYaml .Values.customScripts.initContainers | nindent 8 }}
@@ -114,6 +134,10 @@ spec:
             {{- if .Values.metrics.enabled }}
             - name: prometheus
               containerPort: {{ .Values.metrics.port }}
+            {{- end }}
+            {{- range .Values.extraPorts }}
+            - containerPort: {{ .containerPort }}
+              name: {{ .name }}
             {{- end }}
           env:
             {{- if .Values.auth.enabled }}

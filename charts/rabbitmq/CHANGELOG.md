@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.2.9 (2025-09-18)
+## 0.2.11 (2025-09-18)
 
-* [rabbitmq] chore(deps): update docker.io/rabbitmq:4.1.4-management Docker digest to 85cb76f ([#118](https://github.com/CloudPirates-io/helm-charts/pull/118))
+* [rabbitmq] Fix copy rabbitmq plugins ([#116](https://github.com/CloudPirates-io/helm-charts/pull/116))
 
 ## <small>0.1.1 (2025-09-08)</small>
 

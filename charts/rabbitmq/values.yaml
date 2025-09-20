@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=values.schema.json
 ## @section Global parameters
 global:
   ## @param global.imageRegistry Global Docker Image registry
@@ -276,6 +277,18 @@ extraVolumeMounts: []
 
 ## @param extraObjects Array of extra objects to deploy with the release
 extraObjects: []
+
+## @param extraPorts Additional ports to add to the pod and service
+extraPorts: []
+# extraPorts:
+#   - name: tls
+#     port: 5671
+#     targetPort: tls
+#     containerPort: 5671
+#   - name: mqtt
+#     port: 1883
+#     targetPort: mqtt
+#     containerPort: 1883
 
 ## @section Custom Scripts and Hooks
 customScripts:

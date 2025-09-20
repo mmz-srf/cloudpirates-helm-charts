@@ -134,6 +134,16 @@ The following table lists the configurable parameters of the PostgreSQL chart an
 | `config.extraConfig`                          | Additional PostgreSQL configuration parameters                                          | `[]`    |
 | `config.existingConfigmap`                    | Name of existing ConfigMap with PostgreSQL configuration                                | `""`    |
 
+### Custom User Configuration
+| Parameter                                     | Description                                                                             | Default |
+| --------------------------------------------- | --------------------------------------------------------------------------------------- | ------- |
+| `customUser`     | Optional user to be created at initialisation with a custom password and database                                         | `{}`    |
+| `customUser.name`     | Name of the custom user to be created                                        | `""`    |
+| `customUser.database`     | Name of the database to be created                                        | `""`    |
+| `customUser.password`     | Password to be used for the custom user                                        | `""`    |
+| `customUser.existingSecret`     | Existing secret, in which username, password and database name are saved           | `""`    |
+| `customUser.secretKeys`     | Name of keys in existing secret to use the custom user name, password and database           | `{name: "", database: "", password: ""}`    |
+
 ### PostgreSQL Initdb Configuration
 
 | Parameter                 | Description                                                                   | Default |
@@ -287,7 +297,7 @@ Deploy PostgreSQL with default configuration:
 helm install my-postgres ./charts/postgres
 ```
 
-### Production Setup with Persistence
+### Production Setup with Persistence and custom user
 
 ```yaml
 # values-production.yaml
@@ -305,11 +315,8 @@ resources:
     cpu: "1000m"
 
 auth:
-  enablePostgresUser: true
-  postgresPassword: "your-secure-admin-password"
   username: "myapp"
   password: "your-secure-app-password"
-  database: "myappdb"
 
 config:
   postgresqlMaxConnections: 200
@@ -317,6 +324,13 @@ config:
   postgresqlEffectiveCacheSize: "1GB"
   postgresqlWorkMem: "8MB"
   postgresqlMaintenanceWorkMem: "128MB"
+
+customUser:
+  existingSecret: "postgres-custom-user"
+  secretKeys:
+    name: "username"
+    password: "password"
+    database: "mydatabase"
 
 ingress:
   enabled: true

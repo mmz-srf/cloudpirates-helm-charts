@@ -132,6 +132,7 @@ spec:
                   name: {{ include "redis.secretName" . }}
                   key: {{ include "redis.secretPasswordKey" . }}
           {{- end }}
+          resources: {{- toYaml .Values.initContainer.resources | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: {{ .Values.config.mountPath }}

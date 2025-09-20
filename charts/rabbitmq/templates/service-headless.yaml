@@ -27,5 +27,10 @@ spec:
       targetPort: mgmt
       name: mgmt
     {{- end }}
+    {{- range .Values.extraPorts }}
+    - port: {{ .port }}
+      targetPort: {{ .targetPort | default .name }}
+      name: {{ .name }}
+    {{- end }}
   selector:
     {{- include "rabbitmq.selectorLabels" . | nindent 4 }}

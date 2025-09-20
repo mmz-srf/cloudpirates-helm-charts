@@ -149,7 +149,7 @@ tests:
       postgres:
         enabled: false
       database:
-        type: dev-mem
+        type: postgres
     asserts:
       - isKind:
           of: Secret

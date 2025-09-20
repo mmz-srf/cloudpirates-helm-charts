@@ -78,6 +78,47 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret) }}
+            - name: CUSTOM_DB
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.customUser.existingSecret }}
+                  name: {{ .Values.customUser.existingSecret }}
+                  {{- else }}
+                  name: {{ include "postgres.custom-user-configname" . }}
+                  {{- end }}
+                  {{- if .Values.customUser.secretKeys }}
+                  key: {{ .Values.customUser.secretKeys.database }}
+                  {{- else }}
+                  key: CUSTOM_DB
+                  {{- end }}
+            - name: CUSTOM_USER
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.customUser.existingSecret }}
+                  name: {{ .Values.customUser.existingSecret }}
+                  {{- else }}
+                  name: {{ include "postgres.custom-user-configname" . }}
+                  {{- end }}
+                  {{- if .Values.customUser.secretKeys }}
+                  key: {{ .Values.customUser.secretKeys.name }}
+                  {{- else }}
+                  key: CUSTOM_USER
+                  {{- end }}
+            - name: CUSTOM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.customUser.existingSecret }}
+                  name: {{ .Values.customUser.existingSecret }}
+                  {{- else }}
+                  name: {{ include "postgres.custom-user-configname" . }}
+                  {{- end }}
+                  {{- if .Values.customUser.secretKeys }}
+                  key: {{ .Values.customUser.secretKeys.password }}
+                  {{- else }}
+                  key: CUSTOM_DB
+                  {{- end }}
+            {{- end }}
           {{- if .Values.extraEnvVarsSecret }}
           envFrom:
             - secretRef:
@@ -146,6 +187,11 @@ spec:
             - name: custom-init-scripts
               mountPath: /docker-entrypoint-initdb.d/
             {{- end }}
+            {{- if and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret) }}
+            - name: init-custom-user
+              mountPath: /docker-entrypoint-initdb.d/init-custom-user.sh
+              subPath: init-custom-user.sh
+            {{- end }}
       volumes:
         {{- if not .Values.persistence.enabled }}
         - name: data
@@ -165,6 +211,14 @@ spec:
         - name: custom-init-scripts
           configMap:
             name: {{ include "postgres.initdb.scriptsCM" . }}
+        {{- end }}
+        {{- if and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret) }}
+        - name: init-custom-user
+          configMap:
+            name: {{ printf "%s-init-custom-user" (include "postgres.fullname" .) }}
+            items:
+              - key: init-custom-user.sh
+                path: init-custom-user.sh
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

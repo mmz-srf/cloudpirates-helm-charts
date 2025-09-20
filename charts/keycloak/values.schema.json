@@ -1,0 +1,631 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "description": "Global Docker Image registry"
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Global Docker registry secret names as an array"
+        }
+      }
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "String to partially override keycloak.fullname"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "String to fully override keycloak.fullname"
+    },
+    "commonLabels": {
+      "type": "object",
+      "description": "Labels to add to all deployed objects"
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "description": "Annotations to add to all deployed objects"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "registry": {
+          "type": "string",
+          "description": "Keycloak image registry"
+        },
+        "repository": {
+          "type": "string",
+          "description": "Keycloak image repository"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Keycloak image tag (immutable tags are recommended)"
+        },
+        "imagePullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "Keycloak image pull policy"
+        }
+      }
+    },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of Keycloak replicas to deploy"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Map of annotations to add to the pods"
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Map of labels to add to the pods"
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "properties": {
+        "fsGroup": {
+          "type": "integer",
+          "description": "Group ID for the volumes of the pod"
+        }
+      }
+    },
+    "securityContext": {
+      "type": "object",
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "type": "boolean",
+          "description": "Enable container privilege escalation"
+        },
+        "runAsNonRoot": {
+          "type": "boolean",
+          "description": "Configure the container to run as a non-root user"
+        },
+        "runAsUser": {
+          "type": "integer",
+          "description": "User ID for the Keycloak container"
+        },
+        "runAsGroup": {
+          "type": "integer",
+          "description": "Group ID for the Keycloak container"
+        },
+        "readOnlyRootFilesystem": {
+          "type": "boolean",
+          "description": "Mount container root filesystem as read-only"
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "drop": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Linux capabilities to be dropped"
+            }
+          }
+        }
+      }
+    },
+    "keycloak": {
+      "type": "object",
+      "properties": {
+        "adminUser": {
+          "type": "string",
+          "description": "Keycloak admin username"
+        },
+        "adminPassword": {
+          "type": "string",
+          "description": "Keycloak admin password"
+        },
+        "existingSecret": {
+          "type": "string",
+          "description": "Name of existing secret to use for Keycloak admin credentials"
+        },
+        "secretKeys": {
+          "type": "object",
+          "properties": {
+            "adminPasswordKey": {
+              "type": "string",
+              "description": "Secret key for admin password"
+            }
+          }
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Keycloak hostname"
+        },
+        "hostnameAdmin": {
+          "type": "string",
+          "description": "Keycloak admin hostname"
+        },
+        "hostnameStrict": {
+          "type": "boolean",
+          "description": "Enable strict hostname resolution"
+        },
+        "hostnameBackchannel": {
+          "type": "string",
+          "description": "Keycloak backchannel hostname"
+        },
+        "httpEnabled": {
+          "type": "boolean",
+          "description": "Enable HTTP listener"
+        },
+        "httpPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "HTTP port"
+        },
+        "httpsPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "HTTPS port"
+        },
+        "proxy": {
+          "type": "string",
+          "enum": ["edge", "reencrypt", "passthrough", "none"],
+          "description": "Proxy mode (edge, reencrypt, passthrough, none)"
+        },
+        "production": {
+          "type": "boolean",
+          "description": "Enable production mode"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["postgres", "mysql", "mariadb"],
+          "description": "Database type (postgres, mysql, mariadb)"
+        },
+        "host": {
+          "type": "string",
+          "description": "Database host (only used when not using embedded database)"
+        },
+        "port": {
+          "type": "string",
+          "description": "Database port (only used when not using embedded database)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Database name (only used when not using embedded database)"
+        },
+        "username": {
+          "type": "string",
+          "description": "Database username (only used when not using embedded database)"
+        },
+        "password": {
+          "type": "string",
+          "description": "Database password (only used when not using embedded database)"
+        },
+        "existingSecret": {
+          "type": "string",
+          "description": "Name of existing secret for database credentials"
+        },
+        "secretKeys": {
+          "type": "object",
+          "properties": {
+            "passwordKey": {
+              "type": "string",
+              "description": "Secret key for database password"
+            },
+            "usernameKey": {
+              "type": "string",
+              "description": "Secret key for database username"
+            }
+          }
+        },
+        "jdbcParams": {
+          "type": "string",
+          "description": "Additional JDBC parameters"
+        }
+      }
+    },
+    "cache": {
+      "type": "object",
+      "properties": {
+        "stack": {
+          "type": "string",
+          "enum": ["local", "ispn", "default"],
+          "description": "Cache stack (local, ispn, default)"
+        },
+        "configFile": {
+          "type": "string",
+          "description": "Custom cache configuration file"
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of enabled features"
+        },
+        "disabled": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of disabled features"
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+          "description": "Keycloak service type"
+        },
+        "httpPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Keycloak HTTP service port"
+        },
+        "httpsPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Keycloak HTTPS service port"
+        },
+        "httpTargetPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Keycloak HTTP container port"
+        },
+        "httpsTargetPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Keycloak HTTPS container port"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Service annotations"
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable ingress record generation for Keycloak"
+        },
+        "className": {
+          "type": "string",
+          "description": "IngressClass that will be used to implement the Ingress"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Additional annotations for the Ingress resource"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "Hostname for Keycloak ingress"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "Path for Keycloak ingress"
+                    },
+                    "pathType": {
+                      "type": "string",
+                      "enum": ["Exact", "Prefix", "ImplementationSpecific"],
+                      "description": "Path type for Keycloak ingress"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": {
+                "type": "string"
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "TLS configuration for Keycloak ingress"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Resource limits and requests for the container"
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence using Persistent Volume Claims"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Persistent Volume storage class"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Persistent Volume Claim annotations"
+        },
+        "size": {
+          "type": "string",
+          "description": "Persistent Volume size"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany"]
+          },
+          "description": "Persistent Volume access modes"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "The name of an existing PVC to use for persistence"
+        }
+      }
+    },
+    "livenessProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable livenessProbe on Keycloak containers"
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Initial delay seconds for livenessProbe"
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Period seconds for livenessProbe"
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Timeout seconds for livenessProbe"
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Failure threshold for livenessProbe"
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Success threshold for livenessProbe"
+        }
+      }
+    },
+    "readinessProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable readinessProbe on Keycloak containers"
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Initial delay seconds for readinessProbe"
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Period seconds for readinessProbe"
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Timeout seconds for readinessProbe"
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Failure threshold for readinessProbe"
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Success threshold for readinessProbe"
+        }
+      }
+    },
+    "startupProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable startupProbe on Keycloak containers"
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Initial delay seconds for startupProbe"
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Period seconds for startupProbe"
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Timeout seconds for startupProbe"
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Failure threshold for startupProbe"
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Success threshold for startupProbe"
+        }
+      }
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node labels for pod assignment"
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Toleration labels for pod assignment"
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity settings for pod assignment"
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Specifies whether a service account should be created"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations to add to the service account"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the service account to use"
+        },
+        "automountServiceAccountToken": {
+          "type": "boolean",
+          "description": "Whether to automount the SA token inside the pod"
+        }
+      }
+    },
+    "extraEnv": {
+      "type": "object",
+      "description": "Additional environment variables from key-value pairs"
+    },
+    "extraObjects": {
+      "type": "array",
+      "description": "Array of extra objects to deploy with the release"
+    },
+    "initContainers": {
+      "type": "object",
+      "properties": {
+        "waitForPostgres": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "PostgreSQL init container image for waiting"
+            }
+          }
+        },
+        "waitForMariadb": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "MariaDB init container image for waiting"
+            }
+          }
+        }
+      }
+    },
+    "postgres": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable embedded PostgreSQL database"
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "database": {
+              "type": "string",
+              "description": "PostgreSQL database name"
+            },
+            "username": {
+              "type": "string",
+              "description": "PostgreSQL database user (leave empty for default 'postgres')"
+            },
+            "password": {
+              "type": "string",
+              "description": "PostgreSQL database password"
+            }
+          }
+        }
+      }
+    },
+    "mariadb": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable embedded MariaDB database (set to false when using postgres)"
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "database": {
+              "type": "string",
+              "description": "MariaDB database name"
+            },
+            "username": {
+              "type": "string",
+              "description": "MariaDB database user (leave empty for root user)"
+            },
+            "password": {
+              "type": "string",
+              "description": "MariaDB database password"
+            },
+            "rootPassword": {
+              "type": "string",
+              "description": "MariaDB root password"
+            }
+          }
+        }
+      }
+    }
+  }
+}

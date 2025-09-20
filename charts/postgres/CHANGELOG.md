@@ -1,11 +1,8 @@
 # Changelog
-## 0.4.0 (2025-09-16)
 
-* [postgres] add support for extra env vars from a secret
+## 0.5.0 (2025-09-18)
 
-## 0.3.0 (2025-09-16)
-
-* [postgres] fix env-vars, remove unused auth values, add initialiation variables ([#101](https://github.com/CloudPirates-io/helm-charts/pull/101))
+* [postgres] add support for custom user at initialisation ([#124](https://github.com/CloudPirates-io/helm-charts/pull/124))
 
 ## <small>0.2.1 (2025-08-26)</small>
 

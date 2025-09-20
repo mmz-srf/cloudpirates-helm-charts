@@ -166,3 +166,7 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "postgres.custom-user-configname" -}}
+{{- printf "%s-custom-user-credentials" (include "postgres.fullname" .) -}}
+{{- end }}
