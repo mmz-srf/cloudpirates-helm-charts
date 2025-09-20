@@ -2,56 +2,58 @@
 Expand the name of the chart.
 */}}
 {{- define "wordpress.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- include "common.name" . -}}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
 */}}
 {{- define "wordpress.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
+{{- include "common.fullname" . -}}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "wordpress.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- include "common.chart" . -}}
 {{- end }}
 
 {{/*
 Common labels
 */}}
 {{- define "wordpress.labels" -}}
-helm.sh/chart: {{ include "wordpress.chart" . }}
-{{ include "wordpress.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- with .Values.commonLabels }}
-{{ toYaml . }}
-{{- end }}
+{{- include "common.labels" . -}}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
 {{- define "wordpress.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "wordpress.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- include "common.selectorLabels" . -}}
 {{- end }}
+
+{{/*
+Common annotations
+*/}}
+{{- define "wordpress.annotations" -}}
+{{- include "common.annotations" . -}}
+{{- end }}
+
+{{/*
+Return the proper WordPress image name
+*/}}
+{{- define "wordpress.image" -}}
+{{- include "common.image" (dict "image" .Values.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "wordpress.imagePullSecrets" -}}
+{{ include "common.images.renderPullSecrets" (dict "images" (list .Values.image) "context" .) }}
+{{- end -}}
+
 
 {{/*
 Create the name of the service account to use
@@ -63,13 +65,6 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{/*
-Return the proper WordPress image name
-*/}}
-{{- define "wordpress.image" -}}
-{{ include "common.image" (dict "image" .Values.image "global" .Values.global) }}
-{{- end -}}
 
 {{/*
 Return the MariaDB hostname

@@ -1,3 +1,4 @@
-{{- if .Values.extraObjects }}
-{{- toYaml .Values.extraObjects }}
+{{- range .Values.extraObjects }}
+---
+{{- include "common.tplvalues.render" (dict "value" . "context" $) }}
 {{- end }}

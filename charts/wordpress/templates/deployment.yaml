@@ -2,8 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "wordpress.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "wordpress.labels" . | nindent 4 }}
+  {{- with (include "wordpress.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -12,29 +17,23 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "wordpress.selectorLabels" . | nindent 8 }}
-      {{- with .Values.commonAnnotations }}
+        {{- include "wordpress.labels" . | nindent 8 }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- with (include "wordpress.annotations" .) }}
+        {{- . | nindent 8 }}
+        {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+{{- with (include "wordpress.imagePullSecrets" .) }}
+{{ . | nindent 6 }}
+{{- end }}
       serviceAccountName: {{ include "wordpress.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.containerSecurityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           image: {{ include "wordpress.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ include "common.imagePullPolicy" (dict "image" .Values.image) }}
           env:
             - name: WORDPRESS_DB_HOST
               value: {{ include "wordpress.databaseHost" . | quote }}

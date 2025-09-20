@@ -24,7 +24,7 @@ image:
   ## @param image.tag WordPress image tag
   tag: "6.5.0-php8.2-apache"
   ## @param image.pullPolicy WordPress image pull policy
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 ## @param replicaCount Number of WordPress replicas to deploy
 replicaCount: 1
