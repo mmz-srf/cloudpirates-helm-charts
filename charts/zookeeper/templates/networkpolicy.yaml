@@ -5,7 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "zookeeper.labels" . | nindent 4 }}
-  {{- with (include "zookeeper.annotations" .) }}
 spec:
   podSelector:
     matchLabels:
