@@ -72,9 +72,9 @@ metrics:
 
 ## @section MariaDB Container Security Context
 containerSecurityContext:
-  #  ## @param containerSecurityContext.runAsUser Set MariaDB container's Security Context runAsUser
+  ## @param containerSecurityContext.runAsUser Set MariaDB container's Security Context runAsUser
   runAsUser: 1000
-  #  ## @param containerSecurityContext.runAsGroup Set MariaDB container's Security Context runAsGroup
+  ## @param containerSecurityContext.runAsGroup Set MariaDB container's Security Context runAsGroup
   runAsGroup: 1000
   ## @param containerSecurityContext.seLinuxOptions Set container's Security Context seLinuxOptions
   seLinuxOptions: {}
