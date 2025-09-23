@@ -12,6 +12,7 @@ metadata:
 spec:
   serviceName: {{ include "zookeeper.fullname" . }}-headless
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 10 }}
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
