@@ -118,7 +118,9 @@ spec:
         {{- end }}
       spec:
         accessModes:
-          - {{ .Values.persistence.accessModes | quote }}
+        {{- with .Values.persistence.accessModes }}
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
         {{- if .Values.persistence.storageClass }}
         storageClassName: {{ .Values.persistence.storageClass | quote }}
         {{- end }}
