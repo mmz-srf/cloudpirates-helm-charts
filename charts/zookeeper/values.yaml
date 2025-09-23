@@ -38,8 +38,6 @@ revisionHistoryLimit: 10
 zookeeperConfig:
   ## @param zookeeperConfig.tickTime Zookeeper tick time
   tickTime: 2000
-  ## @param zookeeperConfig.dataDir Zookeeper data directory (should match persistence.mountPath)
-  dataDir: /data
   ## @param zookeeperConfig.initLimit Zookeeper init limit
   initLimit: 10
   ## @param zookeeperConfig.syncLimit Zookeeper sync limit
@@ -75,11 +73,11 @@ metrics:
 ## @section MariaDB Container Security Context
 containerSecurityContext:
   #  ## @param containerSecurityContext.runAsUser Set MariaDB container's Security Context runAsUser
-  runAsUser:
+  runAsUser: 1000
   #  ## @param containerSecurityContext.runAsGroup Set MariaDB container's Security Context runAsGroup
-  runAsGroup:
+  runAsGroup: 1000
   ## @param containerSecurityContext.seLinuxOptions Set container's Security Context seLinuxOptions
-  # seLinuxOptions: {}
+  seLinuxOptions: {}
   ## @param containerSecurityContext.runAsNonRoot Set MariaDB container's Security Context runAsNonRoot
   runAsNonRoot: true
   ## @param containerSecurityContext.allowPrivilegeEscalation Set MariaDB container's privilege escalation
@@ -99,7 +97,7 @@ containerSecurityContext:
 ## @section Security Context
 podSecurityContext:
   ## @param podSecurityContext.fsGroup Group ID for the volumes of the pod
-  fsGroup:
+  fsGroup: 1000
 
 service:
   ## @param service.type Kubernetes service type

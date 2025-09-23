@@ -57,6 +57,10 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
           {{- end }}
+            - name: ZOO_MY_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['apps.kubernetes.io/pod-index']
           livenessProbe:
             tcpSocket:
               port: client
