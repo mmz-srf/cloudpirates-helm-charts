@@ -39,7 +39,7 @@ zookeeperConfig:
   ## @param zookeeperConfig.tickTime Zookeeper tick time
   tickTime: 2000
   ## @param zookeeperConfig.dataDir Zookeeper data directory (should match persistence.mountPath)
-  dataDir: /var/lib/zookeeper/data
+  dataDir: /data
   ## @param zookeeperConfig.initLimit Zookeeper init limit
   initLimit: 10
   ## @param zookeeperConfig.syncLimit Zookeeper sync limit
@@ -74,8 +74,12 @@ metrics:
 
 ## @section MariaDB Container Security Context
 containerSecurityContext:
-  ## @param containerSecurityContext.runAsUser Set MariaDB container's Security Context runAsUser
-  runAsUser: 1000
+  #  ## @param containerSecurityContext.runAsUser Set MariaDB container's Security Context runAsUser
+  runAsUser:
+  #  ## @param containerSecurityContext.runAsGroup Set MariaDB container's Security Context runAsGroup
+  runAsGroup:
+  ## @param containerSecurityContext.seLinuxOptions Set container's Security Context seLinuxOptions
+  # seLinuxOptions: {}
   ## @param containerSecurityContext.runAsNonRoot Set MariaDB container's Security Context runAsNonRoot
   runAsNonRoot: true
   ## @param containerSecurityContext.allowPrivilegeEscalation Set MariaDB container's privilege escalation
@@ -86,7 +90,7 @@ containerSecurityContext:
   readOnlyRootFilesystem: true
   ## @param containerSecurityContext.capabilities Linux capabilities to drop or add for the container
   capabilities:
-    drop: 
+    drop:
     - ALL
   ## @param containerSecurityContext.seccompProfile Seccomp profile for the container
   seccompProfile:
@@ -95,7 +99,7 @@ containerSecurityContext:
 ## @section Security Context
 podSecurityContext:
   ## @param podSecurityContext.fsGroup Group ID for the volumes of the pod
-  fsGroup: 1000
+  fsGroup:
 
 service:
   ## @param service.type Kubernetes service type
@@ -151,7 +155,7 @@ persistence:
   ## @param persistence.existingClaim The name of an existing PVC to use for persistence
   existingClaim: ""
   ## @param mountPath The path where to mount the data volume
-  mountPath: /var/lib/zookeeper/data
+  mountPath: /data
 
 ## @section Liveness and readiness probes
 livenessProbe:
