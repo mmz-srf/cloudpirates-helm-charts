@@ -102,11 +102,6 @@ jobs:
         kubectl cluster-info --context "kind-$CLUSTER_NAME"
         kubectl wait --for=condition=Ready nodes --all --timeout=300s
 
-    - name: Setup Helm repositories
-      run: |
-        helm repo add cloudpirates oci://registry-1.docker.io/cloudpirates
-        helm repo update
-
     - name: Prepare chart
       run: |
         cd charts/${{ matrix.chart }}
