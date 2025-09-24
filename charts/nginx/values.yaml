@@ -258,6 +258,9 @@ extraObjects: []
 ##
 config: ""
 
+## @param existingConfigConfigmap Name of an existing ConfigMap containing nginx.conf
+existingConfigConfigmap: ""
+
 ## @param serverConfig Custom server block to be added to NGINX configuration
 ## PHP-FPM example server block:
 ## serverConfig: |-
@@ -275,6 +278,10 @@ config: ""
 ##   }
 ##
 serverConfig: ""
+
+## @param existingServerConfigConfigmap Name of an existing ConfigMap containing server-config.conf
+existingServerConfigConfigmap: ""
+
 ## @param streamServerConfig Custom stream server block to be added to NGINX configuration
 ## streamServerConfig: |-
 ##   server {
@@ -283,3 +290,6 @@ serverConfig: ""
 ##   }
 ##
 streamServerConfig: ""
+
+## @param existingStreamServerConfigmap Name of an existing ConfigMap containing stream-server-config.conf
+existingStreamServerConfigConfigmap: ""

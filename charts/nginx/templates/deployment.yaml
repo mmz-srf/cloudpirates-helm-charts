@@ -148,12 +148,17 @@ spec:
             - name: static-site
               mountPath: /usr/share/nginx/html
           {{- end }}
-          {{- if .Values.config }}
+          {{- if or .Values.config .Values.existingConfigConfigmap }}
             - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          {{- end }}
+          {{- if or .Values.serverConfig .Values.existingServerConfigConfigmap }}
+            - name: nginx-server-config
               mountPath: /etc/nginx/conf.d
           {{- end }}
-          {{- if or .Values.serverConfig .Values.streamServerConfig }}
-            - name: nginx-server-config
+          {{- if or .Values.streamServerConfig .Values.existingStreamServerConfigConfigmap }}
+            - name: stream-server-config
               mountPath: /etc/nginx/conf.d
           {{- end }}
           {{- if .Values.extraVolumeMounts }}
@@ -220,15 +225,29 @@ spec:
                 path: stream-server-config.conf
             {{- end }}
       {{- end }}
-      {{- if or .Values.serverConfig .Values.streamServerConfig }}
+      {{- if or .Values.config .Values.existingConfigConfigmap }}
         - name: nginx-config
           configMap:
-            name: {{ include "nginx.fullname" . }}
-            {{- if .Values.serverConfig }}
+            name: {{ include "nginx.configConfigmapName" . }}
             items:
               - key: nginx.conf
                 path: nginx.conf
-            {{- end }}
+      {{- end }}
+      {{- if or .Values.serverConfig .Values.existingServerConfigConfigmap }}
+        - name: server-config
+          configMap:
+            name: {{ include "nginx.serverConfigConfigmapName" . }}
+            items:
+              - key: server-config.conf
+                path: server-config.conf
+      {{- end }}
+      {{- if or .Values.streamServerConfig .Values.existingStreamServerConfigConfigmap }}
+        - name: stream-server-config
+          configMap:
+            name: {{ include "nginx.streamServerConfigConfigmapName" . }}
+            items:
+              - key: stream-server-config.conf
+                path: stream-server-config.conf
       {{- end }}
       {{- if .Values.extraVolumes }}
       {{- toYaml .Values.extraVolumes | nindent 8 }}
