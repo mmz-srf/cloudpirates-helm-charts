@@ -1,0 +1,139 @@
+name: Test Helm Charts
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  KIND_VERSION: v0.20.0
+  KUBECTL_VERSION: v1.28.2
+  HELM_VERSION: v3.13.1
+
+jobs:
+  test-charts:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chart:
+          - clusterpirate
+          - ghost
+          - keycloak
+          - mariadb
+          - memcached
+          - minio
+          - mongodb
+          - nginx
+          - postgres
+          - rabbitmq
+          - redis
+          - timescaledb
+          - valkey
+          - wordpress
+          - zookeeper
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Install kubectl
+      run: |
+        curl -LO "https://dl.k8s.io/release/${{ env.KUBECTL_VERSION }}/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+
+    - name: Install Helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh --version ${{ env.HELM_VERSION }}
+
+    - name: Install kind
+      run: |
+        curl -Lo ./kind https://kind.sigs.k8s.io/dl/${{ env.KIND_VERSION }}/kind-linux-amd64
+        chmod +x ./kind
+        sudo mv ./kind /usr/local/bin/
+
+    - name: Create kind cluster
+      run: |
+        kind create cluster --name chart-testing --wait 300s
+        kubectl cluster-info
+        kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+    - name: Add Helm repositories
+      run: |
+        helm repo add cloudpirates https://charts.cloudpirates.io
+        helm repo update
+
+    - name: Update chart dependencies
+      run: |
+        cd charts/${{ matrix.chart }}
+        if [ -f "Chart.lock" ]; then
+          rm Chart.lock
+        fi
+        helm dependency update
+
+    - name: Lint chart
+      run: |
+        helm lint charts/${{ matrix.chart }}
+
+    - name: Template chart
+      run: |
+        helm template test-release charts/${{ matrix.chart }} --debug
+
+    - name: Install chart
+      run: |
+        helm install test-${{ matrix.chart }} charts/${{ matrix.chart }} \
+          --wait --timeout=600s \
+          --create-namespace \
+          --namespace test-${{ matrix.chart }}
+
+    - name: Verify installation
+      run: |
+        helm list -n test-${{ matrix.chart }}
+        kubectl get all -n test-${{ matrix.chart }}
+
+    - name: Test chart (if tests exist)
+      run: |
+        if [ -d "charts/${{ matrix.chart }}/tests" ]; then
+          helm test test-${{ matrix.chart }} -n test-${{ matrix.chart }} --timeout=300s || true
+        else
+          echo "No tests found for ${{ matrix.chart }}"
+        fi
+
+    - name: Uninstall chart
+      if: always()
+      run: |
+        helm uninstall test-${{ matrix.chart }} -n test-${{ matrix.chart }} --wait || true
+        kubectl delete namespace test-${{ matrix.chart }} --ignore-not-found=true
+
+    - name: Delete kind cluster
+      if: always()
+      run: |
+        kind delete cluster --name chart-testing
+
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh --version ${{ env.HELM_VERSION }}
+
+    - name: Install helm unittest plugin
+      run: |
+        helm plugin install https://github.com/helm-unittest/helm-unittest
+
+    - name: Run unit tests
+      run: |
+        ./test-all-charts.sh

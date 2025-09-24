@@ -1,0 +1,221 @@
+name: Chart Integration Tests
+
+on:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      charts:
+        description: 'Comma-separated list of charts to test (leave empty for all)'
+        required: false
+        default: ''
+
+env:
+  KIND_VERSION: v0.20.0
+  KUBECTL_VERSION: v1.28.2
+  HELM_VERSION: v3.13.1
+
+jobs:
+  discover-charts:
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.set-matrix.outputs.charts }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Discover charts
+      id: set-matrix
+      run: |
+        if [ -n "${{ github.event.inputs.charts }}" ]; then
+          # Use manually specified charts
+          CHARTS_INPUT="${{ github.event.inputs.charts }}"
+          CHARTS_ARRAY=$(echo "$CHARTS_INPUT" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | paste -sd ',' -)
+          echo "charts=[$CHARTS_ARRAY]" >> $GITHUB_OUTPUT
+        else
+          # Discover all charts automatically (exclude common chart)
+          CHARTS=$(find charts -maxdepth 1 -type d ! -name 'charts' ! -name 'common' -exec basename {} \; | grep -v '^\.$' | sort | jq -R -s -c 'split("\n")[:-1]')
+          echo "charts=$CHARTS" >> $GITHUB_OUTPUT
+        fi
+
+  test-charts:
+    needs: discover-charts
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        chart: ${{ fromJson(needs.discover-charts.outputs.charts) }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Install tools
+      run: |
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/${{ env.KUBECTL_VERSION }}/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+        
+        # Install Helm
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh --version ${{ env.HELM_VERSION }}
+        
+        # Install kind
+        curl -Lo ./kind https://kind.sigs.k8s.io/dl/${{ env.KIND_VERSION }}/kind-linux-amd64
+        chmod +x ./kind
+        sudo mv ./kind /usr/local/bin/
+
+    - name: Create kind cluster
+      run: |
+        # Create unique cluster name to avoid conflicts in parallel runs
+        CLUSTER_NAME="chart-test-${{ matrix.chart }}-${{ github.run_id }}"
+        echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
+        
+        cat <<EOF > kind-config.yaml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+          kubeadmConfigPatches:
+          - |
+            kind: InitConfiguration
+            nodeRegistration:
+              kubeletExtraArgs:
+                node-labels: "ingress-ready=true"
+          extraPortMappings:
+          - containerPort: 80
+            hostPort: 80
+            protocol: TCP
+          - containerPort: 443
+            hostPort: 443
+            protocol: TCP
+        EOF
+        
+        kind create cluster --name "$CLUSTER_NAME" --config kind-config.yaml --wait 300s
+        kubectl cluster-info --context "kind-$CLUSTER_NAME"
+        kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+    - name: Setup Helm repositories
+      run: |
+        helm repo add cloudpirates https://charts.cloudpirates.io
+        helm repo update
+
+    - name: Prepare chart
+      run: |
+        cd charts/${{ matrix.chart }}
+        
+        # Remove lock file to force dependency update
+        if [ -f "Chart.lock" ]; then
+          rm Chart.lock
+        fi
+        
+        # Update dependencies
+        helm dependency update
+        
+        # Lint chart
+        helm lint .
+
+    - name: Test chart rendering
+      run: |
+        cd charts/${{ matrix.chart }}
+        
+        # Test basic template rendering
+        helm template test-release . --debug > /tmp/rendered.yaml
+        
+        # Validate YAML syntax
+        kubectl apply --dry-run=client -f /tmp/rendered.yaml
+
+    - name: Install chart with default values
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        RELEASE_NAME="test-${{ matrix.chart }}"
+        
+        echo "Installing ${{ matrix.chart }} chart..."
+        helm install "$RELEASE_NAME" charts/${{ matrix.chart }} \
+          --create-namespace \
+          --namespace "$NAMESPACE" \
+          --wait \
+          --timeout=600s \
+          --debug
+
+    - name: Verify installation
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        RELEASE_NAME="test-${{ matrix.chart }}"
+        
+        echo "Verifying installation..."
+        helm list -n "$NAMESPACE"
+        helm status "$RELEASE_NAME" -n "$NAMESPACE"
+        kubectl get all -n "$NAMESPACE"
+        
+        # Wait for pods to be ready
+        kubectl wait --for=condition=Ready pods --all -n "$NAMESPACE" --timeout=300s || true
+
+    - name: Run chart tests
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        RELEASE_NAME="test-${{ matrix.chart }}"
+        
+        if [ -d "charts/${{ matrix.chart }}/tests" ] && [ "$(ls -A charts/${{ matrix.chart }}/tests)" ]; then
+          echo "Running Helm tests for ${{ matrix.chart }}..."
+          helm test "$RELEASE_NAME" -n "$NAMESPACE" --timeout=300s
+        else
+          echo "No Helm tests found for ${{ matrix.chart }}"
+        fi
+
+    - name: Test chart upgrade
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        RELEASE_NAME="test-${{ matrix.chart }}"
+        
+        echo "Testing chart upgrade..."
+        helm upgrade "$RELEASE_NAME" charts/${{ matrix.chart }} \
+          -n "$NAMESPACE" \
+          --wait \
+          --timeout=300s
+
+    - name: Collect logs on failure
+      if: failure()
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        
+        echo "=== Collecting debug information ==="
+        kubectl get events -n "$NAMESPACE" --sort-by='.lastTimestamp' || true
+        kubectl describe pods -n "$NAMESPACE" || true
+        
+        for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}'); do
+          echo "=== Logs for pod $pod ==="
+          kubectl logs "$pod" -n "$NAMESPACE" --previous=false || true
+        done
+
+    - name: Uninstall chart
+      if: always()
+      run: |
+        NAMESPACE="test-${{ matrix.chart }}"
+        RELEASE_NAME="test-${{ matrix.chart }}"
+        
+        echo "Uninstalling ${{ matrix.chart }} chart..."
+        helm uninstall "$RELEASE_NAME" -n "$NAMESPACE" --wait --timeout=300s || true
+        kubectl delete namespace "$NAMESPACE" --ignore-not-found=true --timeout=60s || true
+
+    - name: Cleanup kind cluster
+      if: always()
+      run: |
+        kind delete cluster --name "$CLUSTER_NAME" || true
+
+  summary:
+    needs: test-charts
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Test Summary
+      run: |
+        echo "Chart integration tests completed!"
+        echo "Check individual job results above for details."
