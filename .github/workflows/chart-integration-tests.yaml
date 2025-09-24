@@ -104,7 +104,7 @@ jobs:
 
     - name: Setup Helm repositories
       run: |
-        helm repo add cloudpirates https://charts.cloudpirates.io
+        helm repo add cloudpirates oci://registry-1.docker.io/cloudpirates
         helm repo update
 
     - name: Prepare chart
