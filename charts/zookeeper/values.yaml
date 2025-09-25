@@ -61,7 +61,7 @@ zookeeperConfig:
   ## @param zookeeperConfig.4lwCommandsWhitelist Zookeeper 4-letter word commands whitelist
   ## possible values are: "srvr,ruok,conf,cons,dump,envi,ruok,mntr,stat" or "*" to allow all commands
   ## @see https://zookeeper.apache.org/doc/r3.5.9/zookeeperAdmin.html#sc_clusterOptions
-  commandsWhitelist: "srvr"
+  commandsWhitelist: "srvr,mntr,ruok"
   autopurge:
     ## @param zookeeperConfig.autopurge.purgeInterval Zookeeper autopurge purge interval (in hours)
     purgeInterval: 24
