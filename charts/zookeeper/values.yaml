@@ -33,6 +33,14 @@ replicaCount: 3
 ## @param revisionHistoryLimit Number of revisions to keep in history for rollback (set to 0 for unlimited)
 revisionHistoryLimit: 10
 
+podDisruptionBudget:
+  ## @param podDisruptionBudget.enabled Create a Pod Disruption Budget to ensure high availability during voluntary disruptions
+  enabled: true
+
+networkPolicy:
+  ## @param networkPolicy.enabled Enable network policies
+  enabled: true
+
 ## @section Zookeeper configuration parameters
 ## @see https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_configuration
 zookeeperConfig:

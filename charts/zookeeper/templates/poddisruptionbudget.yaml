@@ -1,3 +1,4 @@
+{{- if and .Values.podDisruptionBudget.enabled (gt (int .Values.replicaCount) 1) }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -11,3 +12,4 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: release-name
       app.kubernetes.io/name: zookeeper
+{{- end }}

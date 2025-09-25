@@ -61,7 +61,7 @@
         },
         "seLinuxOptions": {
           "type": "object",
-          "description": "SELinux options for the container"
+          "description": "Set container's Security Context seLinuxOptions"
         },
         "runAsNonRoot": {
           "type": "boolean",
@@ -113,8 +113,12 @@
     },
     "podSecurityContext": {
       "type": "object",
+      "description": "Pod-level security context settings",
       "properties": {
-        "fsGroup": { "type": "integer", "minimum": 0 }
+        "fsGroup": {
+          "type": "integer",
+          "description": "Group ID for the volumes of the pod"
+        }
       }
     },
     "service": {
@@ -169,14 +173,15 @@
     "affinity": { "type": "object" },
     "persistence": {
       "type": "object",
+      "description": "Persistence configuration",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "storageClass": { "type": "string" },
-        "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
-        "size": { "type": "string", "pattern": "^\\d+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$" },
-        "accessModes": { "type": "array", "items": { "type": "string" } },
-        "existingClaim": { "type": "string" },
-        "mountPath": { "type": "string" }
+        "enabled": { "type": "boolean", "description": "Enable persistence using Persistent Volume Claims" },
+        "storageClass": { "type": "string", "description": "Persistent Volume storage class" },
+        "annotations": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Persistent Volume Claim annotations" },
+        "size": { "type": "string", "description": "Persistent Volume size" },
+        "accessModes": { "type": "array", "items": { "type": "string" }, "description": "Persistent Volume access modes" },
+        "existingClaim": { "type": "string", "description": "The name of an existing PVC to use for persistence" },
+        "mountPath": { "type": "string", "description": "The path where to mount the data volume" }
       }
     },
     "livenessProbe": {
@@ -225,6 +230,26 @@
     },
     "extraVolumes": { "type": "array", "items": { "type": "object" } },
     "extraVolumeMounts": { "type": "array", "items": { "type": "object" } },
-    "extraObjects": { "type": "array", "items": { "type": "object" } }
+    "extraObjects": { "type": "array", "items": { "type": "object" } },
+    "podDisruptionBudget": {
+      "type": "object",
+      "description": "Pod Disruption Budget configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Create a Pod Disruption Budget to ensure high availability during voluntary disruptions"
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "description": "Network Policy configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable network policies"
+        }
+      }
+    }
   }
 }
