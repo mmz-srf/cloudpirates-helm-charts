@@ -1,0 +1,4 @@
+URL: https://{{ (first .Values.ingress.hosts).host  }}
+USER: {{ .Values.wordpress.username }}
+PASS: {{ .Values.wordpress.password }}
+EMAIL: {{ .Values.wordpress.email }}

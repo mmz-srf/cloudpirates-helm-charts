@@ -1,0 +1,26 @@
+apiVersion: v2
+name: wordpress
+description: WordPress is a free and open-source content management system written in PHP.
+type: application
+version: 0.1.0
+appVersion: "6.5.0"
+keywords:
+  - wordpress
+  - cms
+  - blog
+  - php
+  - web
+home: https://www.cloudpirates.io
+sources:
+  - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/wordpress
+maintainers:
+  - name: CloudPirates GmbH & Co. KG
+    url: https://www.cloudpirates.io
+dependencies:
+  - name: common
+    version: "1.x.x"
+    repository: oci://registry-1.docker.io/cloudpirates
+  - name: mariadb
+    version: "0.2.x"
+    repository: oci://registry-1.docker.io/cloudpirates
+icon: https://a.storyblok.com/f/143071/512x512/6512dd22ee/wordpress-logo.svg
