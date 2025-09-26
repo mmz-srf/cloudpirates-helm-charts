@@ -20,6 +20,7 @@ KIND_CLUSTER_NAME="helm-chart-test"
 CHART_NAME=""
 CLEANUP=true
 CREATE_CLUSTER=false
+SKIP_INSTALL=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -32,6 +33,10 @@ while [[ $# -gt 0 ]]; do
             CREATE_CLUSTER=true
             shift
             ;;
+        --skip-install)
+            SKIP_INSTALL=true
+            shift
+            ;;
         --cluster-name)
             KIND_CLUSTER_NAME="$2"
             shift 2
@@ -41,7 +46,8 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --no-cleanup            Don't delete the kind cluster after testing"
-            echo "  --skip-cluster-create   Skip cluster creation (use existing cluster)"
+            echo "  --create-cluster        Create a new kind cluster (default: use existing)"
+            echo "  --skip-install          Skip chart installation (only run linting and templating)"
             echo "  --cluster-name          Name for the kind cluster (default: helm-chart-test)"
             echo "  -h, --help              Show this help message"
             echo ""
@@ -140,11 +146,11 @@ test_chart() {
     
     echo -e "\n${BLUE}🧪 Testing chart: $chart${NC}"
     echo "================================="
+    cd "$chart_path"
     
     # Update dependencies based on Chart.yaml
     echo "📦 Building dependencies..."
-    cd "$chart_path"
-    helm dependency build
+    helm dependency build --skip-refresh
     
     # Lint chart
     echo "🔍 Linting chart..."
@@ -175,6 +181,13 @@ test_chart() {
         fi
     else
         echo -e "${YELLOW}ℹ️  No unittest tests found for $chart${NC}"
+    fi
+
+    if [ "$SKIP_INSTALL" = true ]; then
+        echo -e "${YELLOW}⏩ Skipping chart installation (--skip-install flag used)${NC}"
+        echo -e "${GREEN}✅ Chart $chart tested successfully (linting and templating only)${NC}"
+        cd "$SCRIPT_DIR"
+        return 0
     fi
 
     # Install chart
