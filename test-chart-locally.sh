@@ -19,12 +19,17 @@ NC='\033[0m' # No Color
 KIND_CLUSTER_NAME="helm-chart-test"
 CHART_NAME=""
 CLEANUP=true
+CREATE_CLUSTER=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --no-cleanup)
             CLEANUP=false
+            shift
+            ;;
+        --create-cluster)
+            CREATE_CLUSTER=true
             shift
             ;;
         --cluster-name)
@@ -35,9 +40,10 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS] [CHART_NAME]"
             echo ""
             echo "Options:"
-            echo "  --no-cleanup      Don't delete the kind cluster after testing"
-            echo "  --cluster-name    Name for the kind cluster (default: helm-chart-test)"
-            echo "  -h, --help        Show this help message"
+            echo "  --no-cleanup            Don't delete the kind cluster after testing"
+            echo "  --skip-cluster-create   Skip cluster creation (use existing cluster)"
+            echo "  --cluster-name          Name for the kind cluster (default: helm-chart-test)"
+            echo "  -h, --help              Show this help message"
             echo ""
             echo "If no chart name is provided, all charts will be tested sequentially."
             exit 0
@@ -78,6 +84,11 @@ check_prerequisites() {
         echo -e "${RED}❌ docker is not running or installed.${NC}"
         exit 1
     fi
+
+    if ! helm plugin list | grep -q unittest; then
+        echo -e "${YELLOW}⚠️  helm-unittest plugin not found. Installing...${NC}"
+        helm plugin install https://github.com/helm-unittest/helm-unittest
+    fi
     
     echo -e "${GREEN}✅ All prerequisites are met${NC}"
 }
@@ -104,10 +115,10 @@ nodes:
         node-labels: "ingress-ready=true"
   extraPortMappings:
   - containerPort: 80
-    hostPort: 80
+    hostPort: 9080
     protocol: TCP
   - containerPort: 443
-    hostPort: 443
+    hostPort: 9443
     protocol: TCP
 EOF
     
@@ -130,13 +141,10 @@ test_chart() {
     echo -e "\n${BLUE}🧪 Testing chart: $chart${NC}"
     echo "================================="
     
-    # Update dependencies
-    echo "📦 Updating dependencies..."
+    # Update dependencies based on Chart.yaml
+    echo "📦 Building dependencies..."
     cd "$chart_path"
-    if [ -f "Chart.lock" ]; then
-        rm Chart.lock
-    fi
-    helm dependency update
+    helm dependency build
     
     # Lint chart
     echo "🔍 Linting chart..."
@@ -157,7 +165,18 @@ test_chart() {
         echo -e "${RED}❌ Generated YAML validation failed for $chart${NC}"
         return 1
     fi
-    
+
+    # Helm unittest (if tests exist)
+    if [ -d "tests" ] && [ "$(ls -A tests 2>/dev/null)" ]; then
+        echo "🧪 Running Helm unittest..."
+        if ! helm unittest .; then
+            echo -e "${RED}❌ Helm unittest failed for $chart${NC}"
+            return 1
+        fi
+    else
+        echo -e "${YELLOW}ℹ️  No unittest tests found for $chart${NC}"
+    fi
+
     # Install chart
     local namespace="test-$chart"
     local release_name="test-$chart"
@@ -209,6 +228,11 @@ test_chart() {
 
 # Cleanup function
 cleanup() {
+    if [ "$CREATE_CLUSTER" = false ]; then
+        echo -e "\n${YELLOW}ℹ️  Skipping cleanup (cluster was not created by this script)${NC}"
+        return
+    fi
+    
     if [ "$CLEANUP" = true ]; then
         echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
         kind delete cluster --name "$KIND_CLUSTER_NAME" 2>/dev/null || true
@@ -222,10 +246,24 @@ cleanup() {
 # Main execution
 main() {
     check_prerequisites
-    create_cluster
     
-    # Set cleanup trap
-    trap cleanup EXIT
+    if [ "$CREATE_CLUSTER" = true ]; then
+        create_cluster
+        # Set cleanup trap
+        trap cleanup EXIT
+    else
+        echo -e "${YELLOW}⏩ Skipping cluster creation (using existing cluster)${NC}"
+        # Verify we can connect to the cluster
+        if ! kubectl cluster-info &>/dev/null; then
+            echo -e "${RED}❌ Cannot connect to existing cluster. Please ensure kubectl is configured correctly.${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}✅ Connected to existing cluster${NC}"
+        # Only set cleanup trap if we're not skipping cluster creation
+        if [ "$CLEANUP" = true ]; then
+            echo -e "${YELLOW}ℹ️  Note: --no-cleanup flag is ignored when using --skip-cluster${NC}"
+        fi
+    fi
     
     if [ -n "$CHART_NAME" ]; then
         # Test single chart
