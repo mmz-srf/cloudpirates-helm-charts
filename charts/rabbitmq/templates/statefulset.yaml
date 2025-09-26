@@ -4,15 +4,15 @@ metadata:
   name: {{ include "rabbitmq.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "rabbitmq.labels" . | nindent 4 }}
-  {{- with (include "rabbitmq.annotations" .) }}
+    {{- toYaml (merge (include "rabbitmq.labels" . | fromYaml) .Values.statefulsetLabels) | nindent 4 }}
+  {{- if or (include "rabbitmq.annotations" .) .Values.statefulsetAnnotations }}
   annotations:
-    {{- . | nindent 4 }}
+    {{- toYaml (merge (include "rabbitmq.annotations" . | fromYaml) .Values.statefulsetAnnotations) | nindent 4 }}
   {{- end }}
 spec:
   serviceName: {{ include "rabbitmq.fullname" . }}-headless
   replicas: {{ .Values.replicaCount }}
-  podManagementPolicy: OrderedReady
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
   selector:
     matchLabels:
       {{- include "rabbitmq.selectorLabels" . | nindent 6 }}
@@ -20,6 +20,9 @@ spec:
     metadata:
       labels:
         {{- include "rabbitmq.selectorLabels" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
       {{- with (include "rabbitmq.imagePullSecrets" .) }}
       {{ . | nindent 6 }}
@@ -263,4 +266,9 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistence.size | quote }}
+  {{- end }}
+  {{- if .Values.persistentVolumeClaimRetentionPolicy.enabled }}
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: {{ .Values.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+    whenScaled: {{ .Values.persistentVolumeClaimRetentionPolicy.whenScaled }}
   {{- end }}

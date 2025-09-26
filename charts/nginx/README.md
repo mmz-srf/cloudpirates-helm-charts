@@ -139,12 +139,45 @@ The following table lists the configurable parameters of the Nginx chart and the
 
 ### Nginx Configuration Parameters
 
-| Parameter             | Description                                               | Default |
-| --------------------- | --------------------------------------------------------- | ------- |
-| `config`              | Custom NGINX configuration file (nginx.conf)              | `""`    |
-| `serverConfig`        | Custom server block to be added to NGINX configuration    | `""`    |
-| `streamServerConfig`  | Custom stream server block to be added to NGINX config    | `""`    |
+Existing Configmaps are prioritized over inline configuration. Inline configuration will trigger a pod restart if changed.
 
+| Parameter                             | Description                                                 | Default |
+| ------------------------------------- | ----------------------------------------------------------- | ------- |
+| `config`                              | Custom NGINX configuration file (nginx.conf)                | `""`    |
+| `existingConfigConfigmap`             | Name of an existing ConfigMap containing nginx.conf         | `""`    |
+| `serverConfig`                        | Custom server block to be added to NGINX configuration      | `""`    |
+| `existingServerConfigConfigmap`       | Name of an existing ConfigMap containing server-config.conf | `""`    |
+| `streamServerConfig`                  | Custom stream server block to be added to NGINX config      | `""`    |
+| `existingStreamServerConfigConfigmap` | Name of an existing ConfigMap containing stream-server-config.conf | `""`    |
+
+Example of an existing external `config`:
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-nginx-config
+data:
+  nginx.conf: |-
+    user  nginx;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /run/nginx.pid;
+
+    events {
+        worker_connections  1024;
+    }
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+        access_log  /var/log/nginx/access.log  main;
+        sendfile        on;
+        keepalive_timeout  65;
+        include /etc/nginx/conf.d/*.conf;
+    }
+```
 
 ### Container Port Parameters
 

@@ -64,3 +64,37 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Return the custom NGINX config configmap.
+*/}}
+{{- define "nginx.configConfigmapName" -}}
+{{- if .Values.existingConfigConfigmap -}}
+    {{- printf "%s" (tpl .Values.existingConfigConfigmap $) -}}
+{{- else -}}
+    {{- include "common.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the custom NGINX server config configmap.
+*/}}
+{{- define "nginx.serverConfigConfigmapName" -}}
+{{- if .Values.existingServerConfigConfigmap -}}
+    {{- printf "%s" (tpl .Values.existingServerConfigConfigmap $) -}}
+{{- else -}}
+    {{- include "common.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the custom NGINX stream server config configmap.
+*/}}
+{{- define "nginx.streamServerConfigConfigmapName" -}}
+{{- if .Values.existingStreamServerConfigConfigmap -}}
+    {{- printf "%s" (tpl .Values.existingStreamServerConfigConfigmap $) -}}
+{{- else -}}
+    {{- include "common.fullname" . -}}
+{{- end -}}
+{{- end -}}

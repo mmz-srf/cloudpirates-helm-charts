@@ -184,7 +184,10 @@
     "extraVolumeMounts": { "type": "array", "items": { "type": "object" } },
     "extraObjects": { "type": "array", "items": { "type": "object" } },
     "config": { "type": "string" },
+    "existingConfigConfigmap": { "type": "string" },
     "serverConfig": { "type": "string" },
-    "streamServerConfig": { "type": "string" }
+    "existingServerConfigConfigmap": { "type": "string" },
+    "streamServerConfig": { "type": "string" },
+    "existingStreamServerConfigmap": { "type": "string" }
   }
 }

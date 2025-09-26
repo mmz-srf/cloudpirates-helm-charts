@@ -89,19 +89,31 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 ### Deployment configuration
 
-| Parameter      | Description                                                                                        | Default |
-| -------------- | -------------------------------------------------------------------------------------------------- | ------- |
-| `replicaCount` | Number of RabbitMQ replicas to deploy (clustering needs to be enabled to set more than 1 replicas) | `1`     |
+| Parameter             | Description                                                                                        | Default        |
+| --------------------- | -------------------------------------------------------------------------------------------------- | -------------- |
+| `replicaCount`        | Number of RabbitMQ replicas to deploy (clustering needs to be enabled to set more than 1 replicas) | `1`            |
+| `podManagementPolicy` | StatefulSet pod management policy                                                                  | `OrderedReady` |
+
+### StatefulSet & Pod metadata
+
+| Parameter                | Description                     | Default |
+| ------------------------ | ------------------------------- | ------- |
+| `statefulsetLabels`      | Labels to attach to StatefulSet | `{}`    |
+| `podLabels`              | Labels to attach to pods        | `{}`    |
+| `statefulsetAnnotations` | Annotations for StatefulSet     | `{}`    |
+
 
 ### Service configuration
 
-| Parameter                | Description                 | Default     |
-| ------------------------ | --------------------------- | ----------- |
-| `service.type`           | Kubernetes service type     | `ClusterIP` |
-| `service.amqpPort`       | RabbitMQ AMQP service port  | `5672`      |
-| `service.managementPort` | RabbitMQ management UI port | `15672`     |
-| `service.epmdPort`       | RabbitMQ EPMD port          | `4369`      |
-| `service.distPort`       | RabbitMQ distribution port  | `25672`     |
+| Parameter                     | Description                            | Default     |
+| ----------------------------- | -------------------------------------- | ----------- |
+| `service.type`                | Kubernetes service type                | `ClusterIP` |
+| `service.amqpPort`            | RabbitMQ AMQP service port             | `5672`      |
+| `service.managementPort`      | RabbitMQ management UI port            | `15672`     |
+| `service.epmdPort`            | RabbitMQ EPMD port                     | `4369`      |
+| `service.distPort`            | RabbitMQ distribution port             | `25672`     |
+| `service.annotations`         | Kubernetes service annotations         | `{}`        |
+| `service.annotationsHeadless` | Kubernetes service annotationsHeadless | `25672`     |
 
 ### RabbitMQ Authentication
 
@@ -236,6 +248,43 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 | `extraVolumes`      | Additional volumes to add to the pod                                    | `[]`    |
 | `extraVolumeMounts` | Additional volume mounts to add to the RabbitMQ container               | `[]`    |
 | `extraObjects`      | A list of additional Kubernetes objects to deploy alongside the release | `[]`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+| `podManagementPolicy`      | A list of additional Kubernetes objects to deploy alongside the release | `OrderedReady`    |
+
+### Persistent Volume Claim Retention Policy
+
+| Parameter                                          | Description                                             | Default  |
+| -------------------------------------------------- | ------------------------------------------------------- | -------- |
+| `persistentVolumeClaimRetentionPolicy.enabled`     | Enable Persistent volume retention policy               | `false`  |
+| `persistentVolumeClaimRetentionPolicy.whenDeleted` | Volume retention behavior when replica is deleted       | `Retain` |
+| `persistentVolumeClaimRetentionPolicy.whenScaled`  | Volume retention behavior when replica count is reduced | `Retain` |
+
+### ServiceAccount
+
+| Parameter                    | Description                       | Default |
+| ---------------------------- | --------------------------------- | ------- |
+| `serviceAccount.create`      | Enable creation of ServiceAccount | `true`  |
+| `serviceAccount.name`        | Name of serviceAccount            | `""`    |
+| `serviceAccount.annotations` | Annotations for service account   | `{}`    |
+
+### RBAC parameters
+
+| Parameter     | Description                          | Default |
+| ------------- | ------------------------------------ | ------- |
+| `rbac.create` | Whether RBAC rules should be created | `true`  |
+| `rbac.rules`  | Custom RBAC rules                    | `[]`    |
+
+### Pod Disruption Budget configuration
+| Parameter            | Description                                                    | Default |
+| -------------------- | -------------------------------------------------------------- | ------- |
+| `pdb.create`         | Enable/disable a Pod Disruption Budget creation                | `false` |
+| `pdb.minAvailable`   | Minimum number/percentage of pods that should remain scheduled | `""`    |
+| `pdb.maxUnavailable` | Maximum number/percentage of pods that may be made unavailable | `""`    |
+
 
 #### Extra Objects
 
