@@ -31,9 +31,7 @@ spec:
 {{- with (include "mariadb.imagePullSecrets" .) }}
 {{- . | nindent 6 }}
 {{- end }}
-      {{- if .Values.podSecurityContext.enabled }}
       securityContext: {{ include "common.renderPodSecurityContext" . | nindent 8 }}
-      {{- end }}
       containers:
         - name: mariadb
           image: {{ include "mariadb.image" . }}
