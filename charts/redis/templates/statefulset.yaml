@@ -31,8 +31,7 @@ spec:
 {{- with (include "redis.imagePullSecrets" .) }}
 {{ . | nindent 6 }}
 {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      securityContext: {{ include "common.renderPodSecurityContext" . | nindent 8 }}
       {{- with .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
@@ -145,7 +144,7 @@ spec:
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "redis.image" . | quote }}
           imagePullPolicy: {{ include "common.imagePullPolicy" (dict "image" .Values.image) }}
           command:
@@ -252,7 +251,7 @@ spec:
             {{- end }}
         {{- if and .Values.sentinel.enabled (eq .Values.architecture "replication") }}
         - name: sentinel
-          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "redis.sentinel.image" . | quote }}
           imagePullPolicy: {{ include "common.imagePullPolicy" (dict "image" .Values.sentinel.image) }}
           {{- if .Values.sentinel.extraVolumeMounts }}
@@ -387,7 +386,7 @@ spec:
         {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
-          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "redis.metrics.image" . | quote }}
           imagePullPolicy: {{ include "common.imagePullPolicy" (dict "image" .Values.metrics.image) }}
           {{- if .Values.auth.enabled }}
