@@ -230,10 +230,10 @@ config:
   security:
     staffDeviceVerification: false
   paths:
-    contentPath: "content/"
+    contentPath: "/var/lib/ghost/content"
   referrerPolicy: "origin-when-crossorigin"
   logging:
-    path: "content/logs/"
+    path: "/var/lib/ghost/content/logs/"
     useLocalTime: true
     level: "info"
     rotation:
