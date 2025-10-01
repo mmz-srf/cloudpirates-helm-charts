@@ -133,12 +133,12 @@ The following table lists the configurable parameters of the MinIO chart and the
 | Parameter                                  | Description                                       | Default   |
 | ------------------------------------------ | ------------------------------------------------- | --------- |
 | `podSecurityContext.fsGroup`               | Group ID for the volumes of the pod               | `1000`    |
-| `securityContext.allowPrivilegeEscalation` | Enable container privilege escalation             | `false`   |
-| `securityContext.runAsNonRoot`             | Configure the container to run as a non-root user | `true`    |
-| `securityContext.runAsUser`                | User ID for the MinIO container                   | `1000`    |
-| `securityContext.runAsGroup`               | Group ID for the MinIO container                  | `1000`    |
-| `securityContext.readOnlyRootFilesystem`   | Mount container root filesystem as read-only      | `true`    |
-| `securityContext.capabilities.drop`        | Linux capabilities to be dropped                  | `["ALL"]` |
+| `containerSecurityContext.allowPrivilegeEscalation` | Enable container privilege escalation             | `false`   |
+| `containerSecurityContext.runAsNonRoot`             | Configure the container to run as a non-root user | `true`    |
+| `containerSecurityContext.runAsUser`                | User ID for the MinIO container                   | `1000`    |
+| `containerSecurityContext.runAsGroup`               | Group ID for the MinIO container                  | `1000`    |
+| `containerSecurityContext.readOnlyRootFilesystem`   | Mount container root filesystem as read-only      | `true`    |
+| `containerSecurityContext.capabilities.drop`        | Linux capabilities to be dropped                  | `["ALL"]` |
 
 ### Service configuration
 
