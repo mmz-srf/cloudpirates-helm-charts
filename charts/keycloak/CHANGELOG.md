@@ -1,8 +1,20 @@
 # Changelog
 
-## 0.1.7 (2025-09-29)
+## 0.1.10 (2025-10-02)
 
-* [keycloak] replace deprecated 'proxy' with new proxy parameters ([#183](https://github.com/CloudPirates-io/helm-charts/pull/183))
+* [postgres] chore(deps): update postgres:17.6 Docker digest to e6a4209 ([#173](https://github.com/CloudPirates-io/helm-charts/pull/173))
+
+## <small>0.1.9 (2025-10-02)</small>
+
+* add topologySpreadConstraints and trafficDistribution opti… (#209) ([c777fca](https://github.com/CloudPirates-io/helm-charts/commit/c777fca)), closes [#209](https://github.com/CloudPirates-io/helm-charts/issues/209)
+
+## <small>0.1.8 (2025-09-30)</small>
+
+* Feature/command customize (#186) ([a458e15](https://github.com/CloudPirates-io/helm-charts/commit/a458e15)), closes [#186](https://github.com/CloudPirates-io/helm-charts/issues/186)
+
+## <small>0.1.7 (2025-09-29)</small>
+
+* replace deprecated 'proxy' with new proxy parameters (#183) ([d850b7b](https://github.com/CloudPirates-io/helm-charts/commit/d850b7b)), closes [#183](https://github.com/CloudPirates-io/helm-charts/issues/183)
 
 ## <small>0.1.6 (2025-09-26)</small>
 
