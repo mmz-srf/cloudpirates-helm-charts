@@ -11,6 +11,7 @@ This repository provides secure, well-documented, and configurable Helm charts f
 
 ## Available Charts
 
+<<<<<<< Updated upstream
 | Chart                                  | Description                                                                                                               |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | [ClusterPirate](charts/clusterpirate/) | Client agent for the CloudPirates Managed Observability Platform to connect your Kubernetes cluster to our infrastructure |
@@ -28,6 +29,25 @@ This repository provides secure, well-documented, and configurable Helm charts f
 | [TimescaleDB](charts/timescaledb/)     | TimescaleDB is a PostgreSQL extension for high-performance real-time analytics on time-series and event data              |
 | [Valkey](charts/valkey/)               | High-performance in-memory data structure store, fork of Redis                                                            |
 | [Zookeeper](charts/zookeeper/)         | Centralized service for maintaining configuration information, naming, providing distributed synchronization, and group services |
+=======
+| Chart                                  | Description                                                                                                               | Version |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------- |
+| [ClusterPirate](charts/clusterpirate/) | Client agent for the CloudPirates Managed Observability Platform to connect your Kubernetes cluster to our infrastructure | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/clusterpirate/Chart.yaml&label=&query=version&prefix=v) |
+| [Common](charts/common/)               | A library chart for common templates and helper functions                                                                 | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/common/Chart.yaml&label=&query=version&prefix=v) |
+| [Ghost](charts/ghost/)                 | A simple, powerful publishing platform that allows you to share your stories with the world.                              | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/ghost/Chart.yaml&label=&query=version&prefix=v) |
+| [Keycloak](charts/keycloak/)           | Open Source Identity and Access Management solution                                                                       | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/keycloak/Chart.yaml&label=&query=version&prefix=v) |
+| [MariaDB](charts/mariadb/)             | High-performance, open-source relational database server that is a drop-in replacement for MySQL                          | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/mariadb/Chart.yaml&label=&query=version&prefix=v) |
+| [Memcached](charts/memcached/)         | High-performance, distributed memory object caching system                                                                | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/memcached/Chart.yaml&label=&query=version&prefix=v) |
+| [MinIO](charts/minio/)                 | High-Performance Object Storage compatible with Amazon S3 APIs                                                            | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/minio/Chart.yaml&label=&query=version&prefix=v) |
+| [MongoDB](charts/mongodb/)             | MongoDB a flexible NoSQL database for scalable, real-time data management                                                 | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/mongodb/Chart.yaml&label=&query=version&prefix=v) |
+| [Nginx](charts/nginx/)                 | High-performance HTTP server and reverse proxy                                                                            | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/nginx/Chart.yaml&label=&query=version&prefix=v) |
+| [PostgreSQL](charts/postgres/)         | The World's Most Advanced Open Source Relational Database                                                                 | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/postgres/Chart.yaml&label=&query=version&prefix=v) |
+| [RabbitMQ](charts/rabbitmq/)           | A messaging broker that implements the Advanced Message Queuing Protocol (AMQP)                                           | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/rabbitmq/Chart.yaml&label=&query=version&prefix=v) |
+| [Redis](charts/redis/)                 | In-memory data structure store, used as a database, cache, and message broker                                             | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/redis/Chart.yaml&label=&query=version&prefix=v) |
+| [TimescaleDB](charts/timescaledb/)     | TimescaleDB is a PostgreSQL extension for high-performance real-time analytics on time-series and event data              | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/timescaledb/Chart.yaml&label=&query=version&prefix=v) |
+| [Valkey](charts/valkey/)               | High-performance in-memory data structure store, fork of Redis                                                            | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/valkey/Chart.yaml&label=&query=version&prefix=v) |
+| [Zookeeper](charts/zookeeper/)         | Centralized service for maintaining configuration information, naming, providing distributed synchronization, and group services | ![Version](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/CloudPirates-io/helm-charts/main/charts/zookeeper/Chart.yaml&label=&query=version&prefix=v) |
+>>>>>>> Stashed changes
 
 ## Quick Start
 
@@ -54,7 +74,7 @@ helm install my-release ./charts/<chart-name>
 
 All charts in this repository provide:
 
-### 🔒 **Security First**
+### 🔒 Security First
 
 - **Cryptographically Signed**: All charts are signed with [Cosign](COSIGN.md) for supply chain security
 - Non-root containers by default
@@ -63,7 +83,7 @@ All charts in this repository provide:
 - Security contexts configured
 - No hardcoded credentials
 
-### 📊 **Production Ready**
+### 📊 Production Ready
 
 - Comprehensive health checks (liveness, readiness, startup probes)
 - Resource requests and limits support
@@ -71,7 +91,7 @@ All charts in this repository provide:
 - Rolling update strategies
 - Health check endpoints
 
-### 🎛️ **Highly Configurable**
+### 🎛️ Highly Configurable
 
 - Extensive values.yaml with detailed documentation
 - Support for existing secrets and ConfigMaps
