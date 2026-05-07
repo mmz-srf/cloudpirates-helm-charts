@@ -303,6 +303,16 @@ tolerations: []
 ## @param affinity Affinity settings for pod assignment
 affinity: {}
 
+## @param hostAliases Pod-level hostAliases (`spec.template.spec.hostAliases`).
+## Useful on IPv6-only clusters where BusyBox `hostname -i` cannot resolve the
+## pod's own name; injecting a loopback alias for each pod hostname makes the
+## init script tolerate `set -e`. Each entry is `{ ip, hostnames: [] }`.
+hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "valkey-0"
+  #     - "valkey-1"
+
 ## @param extraEnvVars Additional environment variables to set
 extraEnvVars: []
   # - name: CUSTOM_VAR
