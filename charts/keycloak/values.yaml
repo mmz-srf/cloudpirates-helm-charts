@@ -198,6 +198,8 @@ tls:
   truststoreExistingSecret: ""
   ## @param tls.truststoreExistingSecretKey Key within the truststore secret that holds the truststore file
   truststoreExistingSecretKey: "truststore.jks"
+  ## @param tls.truststoreExistingSecretPasswordKey Key within the truststore secret that holds the truststore password
+  truststoreExistingSecretPasswordKey: "truststore-password"
   ## @param tls.truststorePassword Password for the truststore (use with caution - consider using existingSecret)
   truststorePassword: ""
   ## @param tls.truststoreFile Path where the truststore file will be mounted (internal)
