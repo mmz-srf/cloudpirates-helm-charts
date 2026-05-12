@@ -26,6 +26,8 @@ spec:
     {{- end }}
   {{- else }}
   serviceName: {{ include "redis.fullname" . }}-headless
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
   {{- end }}
   replicas: {{ if eq .Values.architecture "standalone" }}1{{ else }}{{ .Values.replicaCount }}{{ end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}

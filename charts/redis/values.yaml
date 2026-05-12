@@ -54,6 +54,17 @@ clusterReplicaCount: 0
 ## @param revisionHistoryLimit Number of revisions to keep in history for rollback (set to 0 for unlimited)
 revisionHistoryLimit: 10
 
+## @param updateStrategy StatefulSet update strategy (RollingUpdate or OnDelete)
+## When set to OnDelete, pods must be manually deleted to trigger updates
+## This allows for controlled update sequencing in Redis clusters
+updateStrategy:
+  ## @param updateStrategy.type Update strategy type (RollingUpdate or OnDelete)
+  type: RollingUpdate
+  ## @param updateStrategy.rollingUpdate Rolling update configuration (only when type=RollingUpdate)
+  rollingUpdate:
+    ## @param updateStrategy.rollingUpdate.maxUnavailable Maximum number of pods that can be unavailable during update
+    maxUnavailable: 1
+
 ## @param useDeployment Use a Deployment instead of a StatefulSet for Redis nodes.
 ## Only takes effect when persistence.enabled=false.
 ## When persistence.enabled=true, this value is ignored and StatefulSet is always used (required for PVCs).
