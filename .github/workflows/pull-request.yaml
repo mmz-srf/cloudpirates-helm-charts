@@ -74,15 +74,6 @@ jobs:
             echo "No chart changes detected"
           fi
 
-      - name: Cache Helm plugins
-        if: steps.list-changed.outputs.changed == 'true'
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: ~/.local/share/helm/plugins
-          key: ${{ runner.os }}-helm-plugins-${{ hashFiles('**/plugin.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-helm-plugins-
-
       - name: Installing plugin helm-unittest
         if: steps.list-changed.outputs.changed == 'true'
         run: |
@@ -129,14 +120,6 @@ jobs:
         with:
           cluster_name: helm-chart-test
           wait: 300s
-
-      - name: Cache Helm plugins
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        with:
-          path: ~/.local/share/helm/plugins
-          key: ${{ runner.os }}-helm-plugins-${{ hashFiles('**/plugin.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-helm-plugins-
 
       - name: Installing plugin helm-unittest
         run: |
