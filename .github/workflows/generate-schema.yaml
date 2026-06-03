@@ -30,7 +30,7 @@ jobs:
       github.event.pull_request.head.repo.full_name != github.repository &&
       'external' || '' }}
     steps:
-      - run: true
+      - run: "true"
 
   generate-schema:
     needs: authorize
