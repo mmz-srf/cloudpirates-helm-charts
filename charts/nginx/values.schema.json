@@ -63,6 +63,9 @@
                         "command": {
                             "type": "array"
                         },
+                        "enabled": {
+                            "type": "boolean"
+                        },
                         "resources": {
                             "type": "object"
                         },
